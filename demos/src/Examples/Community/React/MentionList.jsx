@@ -1,72 +1,73 @@
-import './MentionList.scss'
+import React, { forwardRef, useEffect, useImperativeHandle, useState, ReactNode } from 'react';
 
-import React, {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useState,
-} from 'react'
+interface MentionListProps {
+  items: string[];
+  command: (item: { id: string }) => void;
+}
 
-export const MentionList = forwardRef((props, ref) => {
-  const [selectedIndex, setSelectedIndex] = useState(0)
+const MentionList = forwardRef((props: MentionListProps, ref) => {
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const selectItem = index => {
-    const item = props.items[index]
+  const selectItem = (index: number) => {
+    const item = props.items[index];
 
     if (item) {
-      props.command({ id: item })
+      props.command({ id: item });
     }
-  }
+  };
 
   const upHandler = () => {
-    setSelectedIndex(((selectedIndex + props.items.length) - 1) % props.items.length)
-  }
+    setSelectedIndex((selectedIndex + props.items.length - 1) % props.items.length);
+  };
 
   const downHandler = () => {
-    setSelectedIndex((selectedIndex + 1) % props.items.length)
-  }
+    setSelectedIndex((selectedIndex + 1) % props.items.length);
+  };
 
   const enterHandler = () => {
-    selectItem(selectedIndex)
-  }
+    selectItem(selectedIndex);
+  };
 
-  useEffect(() => setSelectedIndex(0), [props.items])
+  useEffect(() => setSelectedIndex(0), [props.items]);
 
   useImperativeHandle(ref, () => ({
-    onKeyDown: ({ event }) => {
+    onKeyDown: ({ event }: { event: KeyboardEvent }) => {
       if (event.key === 'ArrowUp') {
-        upHandler()
-        return true
+        upHandler();
+        return true;
       }
 
       if (event.key === 'ArrowDown') {
-        downHandler()
-        return true
+        downHandler();
+        return true;
       }
 
       if (event.key === 'Enter') {
-        enterHandler()
-        return true
+        enterHandler();
+        return true;
       }
 
-      return false
+      return false;
     },
-  }))
+  }));
 
   return (
     <div className="items">
       {props.items.length
         ? props.items.map((item, index) => (
-          <button
-            className={`item ${index === selectedIndex ? 'is-selected' : ''}`}
-            key={index}
-            onClick={() => selectItem(index)}
-          >
-            {item}
-          </button>
-        ))
-        : <div className="item">No result</div>
-      }
+            <button
+              className={`item ${index === selectedIndex ? 'is-selected' : ''}`}
+              key={index}
+              onClick={() => selectItem(index)}
+            >
+              {item}
+            </button>
+          ))
+        : <div className="item">No result</div>}
     </div>
-  )
-})
+  );
+});
+
+MentionList.displayName = 'MentionList';
+
+export default MentionList;
